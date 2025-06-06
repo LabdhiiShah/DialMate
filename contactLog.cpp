@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cctype>  
 using namespace std;
 
 class contact {
@@ -85,17 +86,17 @@ void log::menu() {
 
 // perfecttttttttt
 void log::addContact() {
-  // system("cls");
+   system("cls");
   string name, phone;
   cout << "Enter Name: ";
-  cin.ignore();
-  getline(cin, name);
+  cin.ignore(); // helps taking input properly
+  getline(cin, name); // takes input till enter is pressed
 
   string lower_name = name;
   transform(lower_name.begin(), lower_name.end(), lower_name.begin(),
             ::tolower);
 
-  auto it = find_if(contacts.begin(), contacts.end(), [&](const contact &c) {
+  auto it = find_if(contacts.begin(), contacts.end(), [&](const contact &c) {           
     string contactName = c.getName();
     transform(contactName.begin(), contactName.end(), contactName.begin(),
               ::tolower);
@@ -109,10 +110,14 @@ void log::addContact() {
 
   cout << "Enter Number: ";
   cin >> phone;
-  if (phone.length() == 10) {
+
+  bool check = phone.length() == 10 && all_of(phone.begin(), phone.end(), ::isdigit);
+  if(check)
+  {
     contacts.push_back(contact(name, phone));
     cout << "Contact added Successfullyyy!!\n";
-  } else {
+  }
+  else {
     cout << "Invalid Length of phone number\n";
   }
 }
@@ -123,11 +128,18 @@ void log::displayContact() {
     return;
   }
 
-  sort(contacts.begin(), contacts.end(),
-       [](const contact &a, const contact &b) {
-         return a.getName() < b.getName(); // Sorts alphabetically
-       });
-  // system("cls");
+sort(contacts.begin(), contacts.end(), [](const contact &a, const contact &b) {
+    string nameA = a.getName();
+    string nameB = b.getName();
+
+    // Convert both to lowercase
+    transform(nameA.begin(), nameA.end(), nameA.begin(), ::tolower);
+    transform(nameB.begin(), nameB.end(), nameB.begin(), ::tolower);
+
+    return nameA < nameB;
+});
+
+   system("cls");
   cout << "\n=========== CONTACT LIST ===========\n";
   for (const auto &c : contacts) {
     c.displayContacts();
@@ -139,7 +151,7 @@ void log ::searchContact() {
     cout << "No Contacts Found!!" << endl;
     return;
   }
-  // system("cls");
+   system("cls");
   string query;
   cout << "Enter Name or Phone Number to Search: ";
   cin.ignore();
@@ -156,8 +168,8 @@ void log ::searchContact() {
     transform(contactName.begin(), contactName.end(), contactName.begin(),
               ::tolower);
 
-    if (c.getName().find(query) != string::npos ||
-        c.getPhone().find(query) != string::npos) {
+    if (contactName.find(query) != string::npos ||
+        contactPhone.find(query) != string::npos) {
       c.displayContacts();
       found = true;
     }
@@ -169,6 +181,7 @@ void log ::searchContact() {
 
 // hogayaaaaaaaa sara kuch
 void log::editContact() {
+      system("cls");
   if (contacts.empty()) {
     cout << "No contacts to edit!\n";
     return;
@@ -189,7 +202,7 @@ void log::editContact() {
               ::tolower);
     return contactName == lowerName;
   });
-
+  system("cls");
   if (it == contacts.end()) {
     cout << "Contact not found!\n";
     return;
@@ -217,7 +230,7 @@ void log::editContact() {
         });
     // if (duplicate != contacts.end())  -> value not found
     // if (duplicate == contacts.end())  -> value found
-
+  system("cls");
     if (duplicate != contacts.end()) {
       cout << "A Contact with the same name exists!!\n";
       return;
@@ -227,9 +240,11 @@ void log::editContact() {
       return;
     }
   } else if (choice == 2) {
+        system("cls");
     string newPhone;
     cout << "Enter new phone number: ";
     cin >> newPhone;
+      system("cls");
     if (newPhone.length() == 10) {
       it->setPhone(newPhone);
       cout << "Phone number updated successfully!\n";
@@ -243,6 +258,7 @@ void log::editContact() {
 
 // doneeeeeeeee
 void log::deleteContact() {
+      system("cls");
   if (contacts.empty()) {
     cout << "No contacts available to delete!\n";
     return;
@@ -265,6 +281,8 @@ void log::deleteContact() {
                                 contactName.begin(), ::tolower);
                       return contactName == name;
                     });
+
+    system("cls");
 
   if (it != contacts.end()) // If contact found
   {
@@ -293,7 +311,6 @@ void log::saveContact() {
 void log ::loadContact() {
   ifstream file("contacts.txt"); // Reads the data from file
   if (!file) {
-    cout << "No Saved Contacts Found!!\n";
     return;
   }
 
@@ -306,7 +323,8 @@ void log ::loadContact() {
 }
 
 void log::exitSystem() {
-  //system("cls");
+    saveContact();
+  system("cls");
   exit(0);
 }
 
@@ -316,10 +334,12 @@ int main() {
   return 0;
 }
 
-//*case insensitive[]
-//*repeated contact names []
-//*no. of 10 digits []
-//*ascending order[]
-//*favourites
-//*search[]
-//*sub no.s
+//  COVERS FOLL:
+
+// Case-Insensitive Search
+// Alphabetical Sorting
+// Data Persistence
+// Input Validation
+// Edit Contact
+// Clean CLI Interface
+// File Handling
